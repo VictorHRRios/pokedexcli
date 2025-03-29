@@ -1,5 +1,8 @@
 package main
 
+import ()
+
 func main() {
-	repl()
+	cfg := &config{}
+	repl(cfg)
 }
