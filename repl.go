@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
+
+	"github.com/VictorHRRios/pokedexcli/internal/pokecache"
 )
 
 type config struct {
@@ -14,6 +17,7 @@ type config struct {
 
 func repl(cfg *config) {
 	scanner := bufio.NewScanner(os.Stdin)
+	cache := pokecache.NewCache(5 * time.Minute)
 	for {
 		fmt.Print("Pokedex > ")
 		scanner.Scan()
@@ -29,7 +33,7 @@ func repl(cfg *config) {
 			fmt.Println("Unknown command")
 			continue
 		}
-		command.callback(cfg)
+		command.callback(cfg, &cache)
 	}
 }
 
@@ -40,7 +44,7 @@ func cleanInput(text string) []string {
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(*config) error
+	callback    func(*config, *pokecache.Cache) error
 }
 
 func getCommands() map[string]cliCommand {

@@ -3,10 +3,11 @@ package main
 import (
 	"fmt"
 	"github.com/VictorHRRios/pokedexcli/internal/pokeapi"
+	"github.com/VictorHRRios/pokedexcli/internal/pokecache"
 )
 
-func commandMap(c *config) error {
-	locations, err := pokeapi.ListLocations(c.next)
+func commandMap(c *config, cache *pokecache.Cache) error {
+	locations, err := pokeapi.ListLocations(c.next, cache)
 	if err != nil {
 		return fmt.Errorf("Something went wrong")
 	}
@@ -20,8 +21,8 @@ func commandMap(c *config) error {
 	return nil
 }
 
-func commandMapB(c *config) error {
-	locations, err := pokeapi.ListLocations(c.prev)
+func commandMapB(c *config, cache *pokecache.Cache) error {
+	locations, err := pokeapi.ListLocations(c.prev, cache)
 	if err != nil {
 		return fmt.Errorf("Something went wrong")
 	}
