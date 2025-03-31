@@ -16,6 +16,7 @@ type config struct {
 }
 
 func repl(cfg *config) {
+	var param string
 	scanner := bufio.NewScanner(os.Stdin)
 	cfg.retr = pokeapi.GetRetrieve(5)
 	for {
@@ -28,12 +29,19 @@ func repl(cfg *config) {
 			continue
 		}
 		firstWord := cleanText[0]
+
+		if len(cleanText) > 1 {
+			param = cleanText[1]
+		}
 		command, ok := getCommands()[firstWord]
 		if !ok {
 			fmt.Println("Unknown command")
 			continue
 		}
-		command.callback(cfg)
+		err := command.callback(cfg, param)
+		if err != nil {
+			fmt.Printf("%v\n", err)
+		}
 	}
 }
 
@@ -44,7 +52,7 @@ func cleanInput(text string) []string {
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(*config) error
+	callback    func(*config, string) error
 }
 
 func getCommands() map[string]cliCommand {
@@ -68,6 +76,11 @@ func getCommands() map[string]cliCommand {
 			name:        "mapb",
 			description: "Displays the name of previous 20 locations and goes back a page",
 			callback:    commandMapB,
+		},
+		"explore": {
+			name:        "explore",
+			description: "Displays the names of the pokemon in a location",
+			callback:    commandExplore,
 		},
 	}
 }

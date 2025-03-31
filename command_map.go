@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func commandMap(c *config) error {
+func commandMap(c *config, s string) error {
 	locations, err := c.retr.ListLocations(c.next)
 	if err != nil {
 		return fmt.Errorf("Something went wrong")
@@ -19,7 +19,7 @@ func commandMap(c *config) error {
 	return nil
 }
 
-func commandMapB(c *config) error {
+func commandMapB(c *config, s string) error {
 	if c.prev == nil {
 		fmt.Println("You are on the first page :)")
 		return nil
