@@ -5,20 +5,32 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	"github.com/VictorHRRios/pokedexcli/internal/pokecache"
 )
 
 const baseUrl = "https://pokeapi.co/api/v2"
 
-func ListLocations(pageUrl *string, cache *pokecache.Cache) (LocationArea, error) {
-	fullUrl := baseUrl + "/location-area"
+type Retrieve struct {
+	cache *pokecache.Cache
+}
+
+func GetRetrieve(timer int) *Retrieve {
+	c := pokecache.NewCache(time.Duration(timer * int(time.Minute)))
+	return &Retrieve{
+		cache: &c,
+	}
+}
+
+func (retr Retrieve) ListLocations(pageUrl *string) (LocationArea, error) {
+	fullUrl := baseUrl + "/location-area" + "?offset=0&limit=20"
 	if pageUrl != nil {
 		fullUrl = *pageUrl
 	}
 
-	if cached, ok := cache.Get(fullUrl); ok {
-		fmt.Println("Using cacheed")
+	if cached, ok := retr.cache.Get(fullUrl); ok {
+		//fmt.Println("Using cache'd")
 		locationArea := LocationArea{}
 		err := json.Unmarshal(cached, &locationArea)
 		if err != nil {
@@ -37,7 +49,7 @@ func ListLocations(pageUrl *string, cache *pokecache.Cache) (LocationArea, error
 		return LocationArea{}, fmt.Errorf("Response failed with status code %v", res.Status)
 	}
 
-	cache.Add(fullUrl, body)
+	retr.cache.Add(fullUrl, body)
 
 	locationArea := LocationArea{}
 	err = json.Unmarshal(body, &locationArea)

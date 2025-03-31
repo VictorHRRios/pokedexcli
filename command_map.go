@@ -2,12 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/VictorHRRios/pokedexcli/internal/pokeapi"
-	"github.com/VictorHRRios/pokedexcli/internal/pokecache"
 )
 
-func commandMap(c *config, cache *pokecache.Cache) error {
-	locations, err := pokeapi.ListLocations(c.next, cache)
+func commandMap(c *config) error {
+	locations, err := c.retr.ListLocations(c.next)
 	if err != nil {
 		return fmt.Errorf("Something went wrong")
 	}
@@ -21,14 +19,15 @@ func commandMap(c *config, cache *pokecache.Cache) error {
 	return nil
 }
 
-func commandMapB(c *config, cache *pokecache.Cache) error {
-	locations, err := pokeapi.ListLocations(c.prev, cache)
-	if err != nil {
-		return fmt.Errorf("Something went wrong")
-	}
-	if locations.Previous == nil {
+func commandMapB(c *config) error {
+	if c.prev == nil {
 		fmt.Println("You are on the first page :)")
 		return nil
+	}
+
+	locations, err := c.retr.ListLocations(c.prev)
+	if err != nil {
+		return fmt.Errorf("Something went wrong")
 	}
 
 	c.next = locations.Next
@@ -37,5 +36,6 @@ func commandMapB(c *config, cache *pokecache.Cache) error {
 	for _, location := range locations.Results {
 		fmt.Println(location.Name)
 	}
+
 	return nil
 }

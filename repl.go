@@ -5,19 +5,19 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"time"
 
-	"github.com/VictorHRRios/pokedexcli/internal/pokecache"
+	"github.com/VictorHRRios/pokedexcli/internal/pokeapi"
 )
 
 type config struct {
+	retr *pokeapi.Retrieve
 	next *string
 	prev *string
 }
 
 func repl(cfg *config) {
 	scanner := bufio.NewScanner(os.Stdin)
-	cache := pokecache.NewCache(5 * time.Minute)
+	cfg.retr = pokeapi.GetRetrieve(5)
 	for {
 		fmt.Print("Pokedex > ")
 		scanner.Scan()
@@ -33,7 +33,7 @@ func repl(cfg *config) {
 			fmt.Println("Unknown command")
 			continue
 		}
-		command.callback(cfg, &cache)
+		command.callback(cfg)
 	}
 }
 
@@ -44,7 +44,7 @@ func cleanInput(text string) []string {
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(*config, *pokecache.Cache) error
+	callback    func(*config) error
 }
 
 func getCommands() map[string]cliCommand {
