@@ -10,15 +10,15 @@ import (
 )
 
 type config struct {
-	retr *pokeapi.Retrieve
-	next *string
-	prev *string
+	pokedex map[string]pokeapi.PokemonDetail
+	retr    *pokeapi.Retrieve
+	next    *string
+	prev    *string
 }
 
 func repl(cfg *config) {
 	var param string
 	scanner := bufio.NewScanner(os.Stdin)
-	cfg.retr = pokeapi.GetRetrieve(5)
 	for {
 		fmt.Print("Pokedex > ")
 		scanner.Scan()
@@ -81,6 +81,11 @@ func getCommands() map[string]cliCommand {
 			name:        "explore",
 			description: "Displays the names of the pokemon in a location",
 			callback:    commandExplore,
+		},
+		"catch": {
+			name:        "catch",
+			description: "Displays a toy catch command.",
+			callback:    commandCatch,
 		},
 	}
 }

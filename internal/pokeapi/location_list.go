@@ -5,23 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"time"
-
-	"github.com/VictorHRRios/pokedexcli/internal/pokecache"
 )
-
-const baseUrl = "https://pokeapi.co/api/v2"
-
-type Retrieve struct {
-	cache *pokecache.Cache
-}
-
-func GetRetrieve(timer int) *Retrieve {
-	c := pokecache.NewCache(time.Duration(timer * int(time.Minute)))
-	return &Retrieve{
-		cache: &c,
-	}
-}
 
 func (retr Retrieve) ListLocations(pageUrl *string) (LocationArea, error) {
 	fullUrl := baseUrl + "/location-area" + "?offset=0&limit=20"
